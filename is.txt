@@ -1,0 +1,3015 @@
+SUBSTITUTION CIPHER
+
+FIRST:
+import java.*;
+public class SubstitutionCipher 
+{
+    public static void main(String[] args) 
+    {
+        Scanner sc = new Scanner(System.in);
+        System.out.println("Enter text msg:");
+        String msg = sc.nextLine();
+        int key[] = new int[msg.length()];
+        System.out.print("Random key generated:\t");
+        for(int i=0;i<key.length;i++)
+        {
+            key[i] = getRandomKey();
+            System.out.print(key[i]+" ");
+        }
+        System.out.println("\nEncrypted Text:\t"+encrypt(msg,key));
+        System.out.println("Decrypted Text:\t"+decrypt(encrypt(msg,key), key));
+    }
+    
+   static int getRandomKey()
+   {
+       Random r = new Random();
+       return r.nextInt(10);
+   }
+
+   static String encrypt(String msg, int k[])
+    {
+        String e="";
+        for(int i=0;i<msg.length();i++)
+        {
+          char c = msg.charAt(i);
+          int v = (int)c;
+          if(v>=97 && v<=122)
+          {
+              v = v+k[i];
+              if(v>122)
+              {
+                  v = (v%122)+96;
+              }
+              c = (char)v;
+              e+=c;
+          }
+          else if(v >= 65 && v <=90)
+            {
+                v = v+k[i];
+             
+    if(v > 90)
+                {
+                    v = (v%90)+64;
+                }
+                c = (char)v;
+                e+=c;
+            }
+          else if(v >= 48 && v <=57)
+            {
+                v = v+k[i];
+                if(v > 57)
+                {
+                    v = (v%57)+47;
+                }
+                c = (char)v;
+                e+=c;
+            }
+        }
+        
+        return e;
+    }
+    
+   static String decrypt(String msg, int k[])
+    {
+        String d="";
+        for(int i=0;i<msg.length();i++)
+        {
+          char c = msg.charAt(i);
+          int v = (int)c;
+          if(v>=97 && v<=122)
+          {
+              v =v-k[i];
+                if(v < 97)
+                {
+                    v = v+26;
+                }
+                c = (char)v;
+              d+=c;
+          }
+          else if(v >= 65 && v <=90)
+            {
+                v =v-k[i];
+                if(v < 65)
+                {
+                    v = v+26;
+                }
+                c = (char)v;
+	                d+=c;
+            }
+          else if(v >= 48 && v <=57)
+            {
+                v = v-k[i];
+                if(v < 48)
+                {
+                    v = v+10;
+                }
+                c = (char)v;
+                d+=c;
+            }
+        }
+        return d;
+    }
+}
+
+
+
+SECOND:
+import java.util.Random;
+import java.util.Scanner;
+
+public class Project {
+    public static void main(String[] args) {
+        // TODO code application logic here
+        Scanner sc=new Scanner(System.in);
+        String plaintext,ciphertext;
+        int len;
+        System.out.println("Enter Plaintext: ");
+        plaintext=sc.nextLine();
+        System.out.println("Enter key length: ");
+        len=sc.nextInt();
+        System.out.println("Do you want Random key generation or Manually? Enter r:Random and m:Manully: ");
+        String enter=sc.next();
+        char en=enter.charAt(0);
+        switch(en){
+            case 'r':{
+                    int[] k=new int[len];
+                    Random rand = new Random(); 
+  
+                    for(int i=0;i<len;i++){
+                    k[i]= rand.nextInt(50); 
+                    }
+                    String e=encrypt(plaintext,k);
+                    System.out.println("");
+                    System.out.println("Encrypted text: "+e+"\n");
+                    String d=decrypt(e,k);
+                    System.out.println("Decrypted text: "+d);
+                    break;
+            }
+            case 'm':{
+                    System.out.println("Enter key: ");
+                    int[] k=new int[plaintext.length()];
+                    for(int i=0;i<len;i++){
+                    k[i]=sc.nextInt();
+                    }
+                    for(int i=len-1;i<k.length;i++){
+                            
+                    k[i]=k[i%len];
+          
+                    }
+                    String e=encrypt(plaintext,k);
+                    System.out.println("");
+                    System.out.println("Encrypted text: "+e+"\n");
+                    String d=decrypt(e,k);
+                    System.out.println("Decrypted text: "+d);
+                    break;
+            }
+        }
+        
+                 
+        
+        
+        }
+    
+  private static String encrypt(String plaintext,int[] k) {
+        plaintext=plaintext.replaceAll("\\s","");
+        plaintext=plaintext.toLowerCase();
+        char [] e=plaintext.replaceAll("\\s","").toCharArray();
+        int t,j=0;
+        String ctext = "";
+        for(int i=0;i<plaintext.length();i++){
+        
+        t=plaintext.charAt(i)+k[j]+1-97;
+        t=(t%26)+97;
+        ctext+=String.valueOf((char)t);
+        j++;
+        }
+        
+        return ctext;
+        }
+  
+  
+    private static String decrypt(String encrypt,int[] k) {
+       char [] d=encrypt.toCharArray();
+        int t;
+        String plain = "";
+        int j=0;
+        for(int i=0;i<encrypt.length();i++){
+        t=encrypt.charAt(i)-k[j]-1-122;
+        t=(t%26)+122;
+        plain+=String.valueOf((char)t);
+        j++;
+        }
+        return plain;
+        }
+    }
+
+
+---------------------------------------------------------------------------------------------------------------
+
+
+BRUTE FORCE ON TRANSPOSITION:
+
+import java.util.*;
+public class BruteForce {
+    public static void main(String[] args) {
+            String dectext = "SSDTTRRNNRICNAWCOLLOATHKIUSGYITATOAAEUN";
+            String[] potentialkeys = {"SYSTEMS", "ENGINEERING", "UNIVERSITY", "ESSEN", "DUISBURG", "CRYPTOGRAPHY"};
+            for (int i = 0; i < potentialkeys.length; i++) {
+                String nextdectext = decrypt(dectext, potentialkeys[i]);
+                for (int j = 0; j < potentialkeys.length; j++) {
+                    String result = decrypt(nextdectext, potentialkeys[j]);
+                    System.out.println("Decrypted text:" + result+"\t::\t"+potentialkeys[i]+"  ::  "+potentialkeys[j]);
+                }
+            }
+        }
+    public static String encrypt(String plaintext) {
+        Scanner sc = new Scanner(System.in);
+        List<String> al = new ArrayList<>();
+        List<Integer> al1 = new ArrayList<>();
+        char[] plaintextarr;
+        char[] keyarr;
+        char[] keyarr1;
+        String encytext = "";
+        System.out.println("\nEnter key:");
+        String key = sc.next();
+        int k = 0;
+        plaintextarr = plaintext.toCharArray();
+        keyarr = key.toCharArray();
+        keyarr1 = key.toCharArray();
+        Arrays.sort(keyarr);
+        if (!al.isEmpty()) {
+            al.clear();
+        }
+
+        int temp = 1;
+        for (int i = 1; i <= keyarr.length; i++) {
+            al.add(keyarr[i - 1] + " " + (temp++));
+        }
+        int rows;
+        if (plaintextarr.length % keyarr.length == 0) {
+            rows = plaintextarr.length / keyarr.length;
+        } else {
+            rows = plaintextarr.length / keyarr.length + 1;
+        }
+
+        char[][] text = new char[rows][keyarr.length];
+
+        for (int i = 0; i < rows; i++) {//System.out.println("");
+            for (int j = 0; j < keyarr.length; j++) {
+                if (k < plaintextarr.length) {
+                    text[i][j] = plaintextarr[k++];
+                } else {
+                    text[i][j] = '$';
+                }
+            }
+        }
+
+        for (int j = 0; j < keyarr1.length; j++) {
+            for (int i = 0; i < al.size(); i++) {
+                String s = al.get(i);
+                String[] tempstr = s.split(" ");
+                String com = keyarr1[j] + "";
+                if (tempstr[0].equals(com)) {
+                    al1.add(Integer.parseInt(tempstr[1]));
+                    al.remove(s);
+                    break;
+                }
+            }
+        }
+
+        for (int j = 1; j <= al1.size(); j++) {
+            int indx = al1.indexOf(j);
+            for (int k1 = 0; k1 < rows; k1++) {
+                encytext = encytext + "" + text[k1][indx];
+            }
+        }
+        return encytext;
+    }
+
+    public static String decrypt(String plaintext, String key) {
+        String ret = "";
+        List<String> al = new ArrayList<>();
+        List<Integer> al1 = new ArrayList<>();
+        char[] plaintextarr;
+        char[] keyarr;
+        char[] keyarr1;
+        int k = 0;
+        plaintextarr = plaintext.toCharArray();
+        keyarr = key.toCharArray();
+        keyarr1 = key.toCharArray();
+        Arrays.sort(keyarr);
+        if (!al.isEmpty()) {
+            al.clear();
+        }
+        if (!al1.isEmpty()) {
+            al1.clear();
+        }
+        int temp = 1;
+        for (int i = 1; i <= keyarr.length; i++) {
+            al.add(keyarr[i - 1] + " " + (temp++));
+        }
+        int rows;
+        if (plaintext.length() % key.length() == 0) {
+            rows = plaintext.length() / key.length();
+        } else {
+            rows = plaintext.length() / key.length() + 1;
+        }
+        char[][] newtext = new char[rows][keyarr.length];
+        int diff = (rows * keyarr.length) - plaintext.length();
+        int tdiff = diff;
+        int tempi = rows - 1;
+        int tempj = keyarr.length - 1;
+        while (diff != 0) {
+            newtext[tempi][tempj--] = '$';
+            if (tempi == -1) {
+                tempj = keyarr.length - 1;
+                tempi--;
+            }
+            diff--;
+        }
+
+        for (int j = 0; j < keyarr1.length; j++) {
+            for (int i = 0; i < al.size(); i++) {
+                String s = al.get(i);
+                String[] tempstr = s.split(" ");
+                String com = keyarr1[j] + "";
+                if (tempstr[0].equals(com)) {
+                    al1.add(Integer.parseInt(tempstr[1]));
+                    al.remove(s);
+                    break;
+                }
+            }
+        }
+
+        int d = 0;
+        for (int i = 1; i <= key.length(); i++) {
+            for (int j = 0; j < rows; j++) {
+                if (newtext[j][al1.indexOf(i)] != '$') {
+                    newtext[j][al1.indexOf(i)] = plaintextarr[d++];
+                } else {
+
+                }
+            }
+        }
+
+        for (int i = 0; i < rows; i++) {
+            for (int j = 0; j < keyarr.length; j++) {
+                ret = ret + "" + newtext[i][j];
+            }
+        }
+        return ret.substring(0, ret.length() - (tdiff));
+    }
+}
+
+
+---------------------------------------------------------------------------------------------------------------
+
+
+BRUTE FORCE ON SUBSTITUTION CIPHER:
+
+import java.io.*;
+import java.*;
+
+public class CaesarBruteForce {
+    public static void main(String[] args) throws IOException {
+        System.out.println("Encrypted Text:\t"+ encrypt("hello world", 4));
+       bruteforce(encrypt("hello world", 4));
+} 
+
+   static String encrypt(String plaintext,int k) {
+        plaintext=plaintext.replaceAll("\\s","");
+        plaintext=plaintext.toLowerCase();
+        char [] e=plaintext.replaceAll("\\s","").toCharArray();
+        int t=0,j=0;
+        String ctext = "";
+        for(int i=0;i<plaintext.length();i++){
+        if(e[i]>96 && e[i]<123){
+        t=plaintext.charAt(i)+k+1-97;
+        t=(t%26)+97;
+        }
+        ctext+=String.valueOf((char)t);
+        j++;
+        }
+        return ctext;
+        }
+   
+    static String decrypt(String encrypt,int k) {
+       char [] d=encrypt.toCharArray();
+        int t;
+        String plain = "";
+        int j=0;
+        for(int i=0;i<encrypt.length();i++){
+        t=encrypt.charAt(i)-k-1-122;
+        t=(t%26)+122;
+        plain+=String.valueOf((char)t);
+        j++;
+        }
+        return plain;
+        }
+   private static void bruteforce(String e) {
+       System.out.println("Brute Force Analysis:");
+       for(int i=0;i<26;i++){
+           System.out.println("Shift "+i+" :"+decrypt(e, i));
+       }
+    }	
+}	
+
+
+---------------------------------------------------------------------------------------------------------------
+
+
+BRUTE FORCE ON TRANSPOSITION + SUBSTITUTION CIPHER:
+
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Scanner;
+
+public class BruteForceAnalysis {
+
+    public static void main(String[] args) {
+        Scanner sc = new Scanner(System.in);
+        System.out.println("1.Caesar Cipher");
+        System.out.println("2.Transposition Cipher");
+        int choice = sc.nextInt();
+        if (choice == 1) {
+            String plaintext = "", ciphertext;
+            int len;
+            System.out.println("Enter Plaintext: ");
+            plaintext=sc.next();
+
+            System.out.println("Enter key: ");
+            int k = sc.nextInt();
+            String e = encryptcaesar(plaintext, k);
+            System.out.println("");
+            System.out.println("Encrypted text: " + e + "\n");
+
+            int n = e.length();
+            int[] frequency = new int[26];
+
+            for (int i = 0; i < n; i++) {
+                frequency[e.charAt(i) - 'a']++;
+            }
+
+            for (int i = 0; i < 26; i++) {
+                char c = (char) ('a' + i);
+                System.out.print(c + ": ");
+                for (int m = 0; m < frequency[c - 'a']; m++) {
+                    System.out.print("*");
+                }
+                System.out.print("\n");
+            }
+
+            bruteforce(e);
+
+        }
+
+        if (choice == 2) {
+            String dectext = "SSDTTRRNNRICNAWCOLLOATHKIUSGYITATOAAEUN";
+
+            String[] potentialkeys = {"SYSTEMS", "ENGINEERING", "UNIVERSITY", "ESSEN", "DUISBURG", "CRYPTOGRAPHY"};
+            for (int i = 0; i < potentialkeys.length; i++) {
+                String nextdectext = decrypttransposition(dectext, potentialkeys[i]);
+                for (int j = 0; j < potentialkeys.length; j++) {
+                    String result = decrypttransposition(nextdectext, potentialkeys[j]);
+                    System.out.println("Decrypted text:" + result);
+                }
+            }
+        }
+
+    }
+
+    public static String decrypttransposition(String plaintext, String key) {
+        String ret = "";
+        List<String> al = new ArrayList<>();
+        List<Integer> al1 = new ArrayList<>();
+        char[] plaintextarr;
+        char[] keyarr;
+        char[] keyarr1;
+        int k = 0;
+        plaintextarr = plaintext.toCharArray();
+        keyarr = key.toCharArray();
+        keyarr1 = key.toCharArray();
+        Arrays.sort(keyarr);
+
+        if (!al.isEmpty()) {
+            al.clear();
+        }
+
+        if (!al1.isEmpty()) {
+            al1.clear();
+        }
+
+        int temp = 1;
+        for (int i = 1; i <= keyarr.length; i++) {
+            al.add(keyarr[i - 1] + " " + (temp++));
+        }
+
+        int rows;
+        if (plaintext.length() % key.length() == 0) {
+            rows = plaintext.length() / key.length();
+        } else {
+            rows = plaintext.length() / key.length() + 1;
+        }
+
+        char[][] newtext = new char[rows][keyarr.length];
+
+        int diff = (rows * keyarr.length) - plaintext.length();
+        int tdiff = diff;
+        int tempi = rows - 1;
+        int tempj = keyarr.length - 1;
+        while (diff != 0) {
+            newtext[tempi][tempj--] = '$';
+            if (tempi == -1) {
+                tempj = keyarr.length - 1;
+                tempi--;
+            }
+            diff--;
+        }
+
+        for (int j = 0; j < keyarr1.length; j++) {
+            for (int i = 0; i < al.size(); i++) {
+                String s = al.get(i);
+                String[] tempstr = s.split(" ");
+                String com = keyarr1[j] + "";
+                if (tempstr[0].equals(com)) {
+                    al1.add(Integer.parseInt(tempstr[1]));
+                    al.remove(s);
+                    break;
+                }
+            }
+        }
+
+        int d = 0;
+        for (int i = 1; i <= key.length(); i++) {
+            for (int j = 0; j < rows; j++) {
+                if (newtext[j][al1.indexOf(i)] != '$') {
+                    newtext[j][al1.indexOf(i)] = plaintextarr[d++];
+                } else {
+
+                }
+            }
+        }
+
+        for (int i = 0; i < rows; i++) {
+            for (int j = 0; j < keyarr.length; j++) {
+                ret = ret + "" + newtext[i][j];
+            }
+        }
+        return ret.substring(0, ret.length() - (tdiff));
+    }
+
+    static String encryptcaesar(String plaintext, int k) {
+        plaintext = plaintext.replaceAll("\\s", "");
+        plaintext = plaintext.toLowerCase();
+        char[] e = plaintext.replaceAll("\\s", "").toCharArray();
+        int t = 0, j = 0;
+        String ctext = "";
+        for (int i = 0; i < plaintext.length(); i++) {
+            if (e[i] > 96 && e[i] < 123) {
+                t = plaintext.charAt(i) + k + 1 - 97;
+                t = (t % 26) + 97;
+            }
+
+            ctext += String.valueOf((char) t);
+            j++;
+
+        }
+
+        return ctext;
+    }
+
+    static String decryptcaesar(String encrypt, int k) {
+        char[] d = encrypt.toCharArray();
+        int t;
+        String plain = "";
+        int j = 0;
+        for (int i = 0; i < encrypt.length(); i++) {
+            t = encrypt.charAt(i) - k - 1 - 122;
+            t = (t % 26) + 122;
+            plain += String.valueOf((char) t);
+            j++;
+        }
+        return plain;
+    }
+
+    private static void bruteforce(String e) {
+        System.out.println("\n\n");
+        System.out.println("Brute Force Analysis:");
+        for (int i = 0; i < 26; i++) {
+            System.out.println("Shift " + i + " :" + decryptcaesar(e, i));
+        }
+    }
+
+}
+
+---------------------------------------------------------------------------------------------------------------
+
+
+TRANSPOSITION CIPHER:
+
+FIRST:
+import java.util.Scanner;
+
+public class TranspositionCipher 
+{
+   static String encrypt(String p,String k)
+    {
+      Scanner sc2 = new Scanner(System.in);
+      int m,n,cnt=0;
+      String ciphertxt="";
+     
+       int[] key=new int[k.length()];
+       for(int i=0;i<k.length();i++)
+         key[i]=Integer.parseInt(Character.toString(k.charAt(i)));
+       n= k.length();  // no of columns
+       m= p.length()/n;// no of rows
+        
+       if(p.length()%n!=0)           
+           m=m+1;
+     
+       char[][] matrix= new char[m][n];
+       for(int i=0;i<m;i++)
+       {
+           for(int j=0;j<n;j++)
+           {
+               if(cnt<p.length())
+               {
+               matrix[i][j]=p.charAt(cnt);
+               }
+               else
+               {
+               matrix[i][j]='X';    
+               }
+                cnt++;
+           }
+       }
+       System.out.println("\nBefore encryption matrix:");
+        for(int i=0;i<m;i++)
+       {
+           for(int j=0;j<n;j++)
+           {
+                 System.out.print(matrix[i][j]+" "); 
+           }
+            System.out.print("\n"); 
+       }
+        
+        for(int i=0;i<n;i++)
+       {
+           for(int j=0;j<m;j++)
+           {
+               ciphertxt=ciphertxt+matrix[j][key[i]-1];
+           }
+       }
+        return ciphertxt;   
+    }
+ 
+   static String decrypt(String p,String k)
+    {
+      Scanner sc2 = new Scanner(System.in);
+      int m,n,cnt=0;
+      String plaintxt="";
+      int[] key=new int[k.length()];
+      for(int i=0;i<k.length();i++)
+         key[i]=Integer.parseInt(Character.toString(k.charAt(i)));
+       n= k.length();
+       m= p.length()/n;
+       if(p.length()%n!=0)
+       {
+           m=m+1;
+       }
+       char[][] matrix= new char[m][n];
+       for(int i=0;i<n;i++)
+       {
+           for(int j=0;j<m;j++)
+           {
+               matrix[j][key[i]-1]=p.charAt(cnt);
+               cnt++;
+           }
+       }
+       System.out.println("\nAfter decryption matrix:");
+        for(int i=0;i<m;i++)
+       {
+           for(int j=0;j<n;j++)
+           {
+                 System.out.print(matrix[i][j]+" "); 
+                 plaintxt=plaintxt+matrix[i][j];
+           }
+            System.out.print("\n"); 
+       }
+        return plaintxt;
+    }
+     public static void main(String[] args) throws Exception 
+  { 
+      String p,k1="",k2="";
+      int r;
+      Scanner sc = new Scanner(System.in);
+      System.out.println("Enter plain text");
+      p = sc.nextLine();
+      p=p.replace(" ", "");
+      System.out.println("Enter the key");
+      k1 = sc.nextLine(); 
+      String c1= encrypt(p,k1);
+      System.out.println("\nEnter the key2");
+      k2 = sc.nextLine(); 
+      String c2= encrypt(c1,k2);
+      System.out.println("\nCipher Text After Round 1: "+c1);
+      System.out.println("Cipher Text After round 2: "+c2);
+      String p1=decrypt(c2,k2);
+      String p2=decrypt(p1,k1);
+      System.out.println("\nPlain Text After Decryption Round 1: "+p1);
+      System.out.println("Plain Text After Decryption Round 2: "+p2); 
+  }
+}
+
+
+OUTPUT
+run:
+Enter plain text
+meet me tonight I have the goods
+Enter the key
+5431627
+
+Before encryption matrix:
+m e e t m e t 
+o n i g h t I 
+h a v e t h e 
+g o o d s X X 
+
+Enter the key2
+7261345
+
+Before encryption matrix:
+m h t s t g e 
+d e i v o m o 
+h g e t h X e 
+n a o t I e X 
+
+Cipher Text After Round 1: mhtstgedeivomohgethXenaotIeX
+Cipher Text After round 2: eoeXhegagmXemdhntieosvtttohI
+
+After decryption matrix:
+m h t s t g e 
+d e i v o m o 
+h g e t h X e 
+n a o t I e X 
+
+After decryption matrix:
+m e e t m e t 
+o n i g h t I 
+h a v e t h e 
+g o o d s X X 
+
+Plain Text After Decryption Round 1: mhtstgedeivomohgethXenaotIeX
+Plain Text After Decryption Round 2: meetmetonightIhavethegoodsXX
+BUILD SUCCESSFUL (total time: 40 seconds)
+
+
+
+
+
+SECOND:
+
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.util.*;
+class finaltransp
+{
+      public static void main(String args[]) throws FileNotFoundException{
+          File f=new File("input.txt");      File f=new File("test.pdf");
+      Scanner sc = new Scanner(f);
+      Scanner s1=new Scanner(System.in);
+String message = null;
+      System.out.print("\nEnter plaintext(enter in lower case): ");
+     //message=s1.next();
+      while(sc.hasNext())
+      {
+            message = sc.nextLine();
+      }
+      System.out.print("\nEnter key in numbers: ");
+      String key = s1.next();
+      int columnCount = key.length();
+      int rowCount = (message.length()+columnCount)/columnCount;
+      int plainText[][] = new int[rowCount][columnCount];
+      int cipherText[][] = new int[rowCount][columnCount];
+       System.out.print("\n-----Encryption-----\n"); 
+      cipherText = encrypt(plainText, cipherText, message, rowCount, columnCount, key);
+      String ct = "";
+      for(int i=0; i<columnCount; i++)
+      {
+           for(int j=0; j<rowCount; j++)
+           {
+                 if(cipherText[j][i] == 0)
+                      ct = ct + 'x';
+                 else{
+                      ct = ct + (char)cipherText[j][i]; } }        }
+      System.out.print("\nCipher Text: " + ct);
+      System.out.print("\n\n\n-----Decryption-----\n");
+      plainText = decrypt(plainText, cipherText, ct, rowCount, columnCount, key);
+      String pt = "";
+      for(int i=0; i<rowCount; i++)
+      {
+            for(int j=0; j<columnCount; j++)
+            {
+                 if(plainText[i][j] == 0)
+                       pt = pt + "";
+                 else{
+                        pt = pt + (char)plainText[i][j]; } } }
+      System.out.print("\nPlain Text: " + pt);
+
+      System.out.println();
+      }
+
+      static int[][] encrypt(int plainText[][], int cipherText[][], String message, int rowCount, int columnCount, String key){
+           int i,j;
+           int k=0;
+           for(i=0; i<rowCount; i++)
+          {
+                for(j=0; j<columnCount; j++)
+                {
+                      if(k < message.length()) {
+                             plainText[i][j] = (int)message.charAt(k);
+                             k++;
+                      }
+                      else {
+                             break; } } } 
+          for(i=0; i<columnCount; i++)
+          {
+               
+ int currentCol= ( (int)key.charAt(i) - 48 ) -1;
+                for(j=0; j<rowCount; j++)
+                {
+                      cipherText[j][i] = plainText[j][currentCol]; } }
+          System.out.print("Cipher text array: \n");
+          for(i=0;i<rowCount;i++){
+                for(j=0;j<columnCount;j++){
+                      System.out.print((char)cipherText[i][j]+"\t");
+                }
+                System.out.println();
+          }
+          return cipherText;
+     }
+
+     static int[][] decrypt(int plainText[][], int cipherText[][], String message, int rowCount, int columnCount, String key){
+            int i,j;
+            int k=0;
+
+            for(i=0; i<columnCount; i++)
+            {
+                  int currentCol= ( (int)key.charAt(i) - 48 ) -1;
+                  for(j=0; j<rowCount; j++)
+                  {
+                        plainText[j][currentCol] = cipherText[j][i];
+} }
+            System.out.print("Plain text Array: \n");
+            for(i=0;i<rowCount;i++){
+                 for(j=0;j<columnCount;j++){
+                        System.out.print((char)plainText[i][j]+"\t");
+                 }
+                 System.out.println();
+            }
+           return plainText;
+      } }
+OUTPUT
+1.Input as short message:
+Enter plaintext(enter in lower case): ramdeobaba
+Enter key in numbers: 31245
+-----Encryption-----
+Cipher text array: 
+m	r	a	d	e	
+a	o	b	b	a	
+Cipher Text: maxroxabxdbxeax
+
+-----Decryption-----
+Plain text Array: 
+r	a	m	d	e	
+o	b	a	b	a	
+Plain Text: ramdeobaba
+BUILD SUCCESSFUL (total time: 9 seconds)
+
+
+---------------------------------------------------------------------------------------------------------------
+
+
+DOUBLE TRANSPOSITION
+
+FIRST:
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.Scanner;
+
+public class Transposition {
+
+    public static void main(String[] args) throws IOException {
+        Scanner sc=new Scanner(System.in);
+        int key1[],key2[];
+        System.out.println("Enter the plaintext");
+        BufferedReader br1 = new BufferedReader(new InputStreamReader(System.in));
+        String msg=br1.readLine();
+        int m=msg.length();
+        System.out.println("Enter size of key");
+        int n=sc.nextInt();
+        System.out.println("Enter the key");
+        String key=sc.next();
+        key1=keyConversion(key);
+        System.out.println("Enter the secound key");
+        key=sc.next();
+        key2=keyConversion(key);
+        int l=m/n;
+        String cipher1 = encrypt(msg,key1,l+1);
+        System.out.println("Cipher1 : "+cipher1);
+        String cipher2 = encrypt(cipher1,key2,l+1);
+        System.out.println("Cipher2 : "+cipher2);
+        String text = decrypt(cipher2,key2);
+        String text1 = decrypt(text,key1);
+        System.out.println("Decrypted text : "+text);
+        System.out.println("Decrypted text : "+text1);
+    }
+    static int[] keyConversion(String key)
+    {
+        int[] k=new int[key.length()];
+        ArrayList<String> k1=new ArrayList<>();
+        for(int i=0;i<key.length();i++)
+        {
+            k1.add(key.charAt(i)+"");
+        }
+        Comparator c=null;
+        k1.sort(c);
+        for(int i=0;i<key.length();i++)
+        {
+            int j=k1.indexOf(key.charAt(i)+"");
+            k[i]=j+1;
+        }
+        return k;
+    }
+    static String encrypt(String msg,int[] key,int l)
+    {
+        int n=key.length;
+        int m=msg.length();
+  //      System.out.println(l);
+        char mat[][]=new char[l][n];
+        char s[]=msg.toCharArray();
+        int  k=0;
+        for(int i=0;i<l;i++)
+        {
+            for(int j=0;j<n;j++)
+            {
+                if(k!=m)
+                {
+                    mat[i][j]=s[k];
+                    k++;
+                }
+                else
+                {
+                    mat[i][j]='$';
+                }
+            }
+        }
+//        for(int i=0;i<l;i++)
+//        {
+//            for(int j=0;j<n;j++)
+//            {
+//                System.out.print(mat[i][j]+"  ");
+//            }
+//            System.out.println("");
+//        }    
+        String cipher="";
+        int c=0;
+        for(int i=1;i<=n;i++)
+        {
+            for(int j=0;j<n;j++)
+            {
+                if(key[j]==i)
+                {
+                    c=j;
+                }
+            }
+            for(int h=0;h<l;h++)
+            {
+                cipher=cipher+mat[h][c];
+            }
+        }
+        return cipher;
+    }
+    
+    static String decrypt(String cipher,int[] key)
+    {
+        char s[]=cipher.toCharArray();
+        String text="";
+        int n=key.length;
+        int m=cipher.length();
+        int l=(m/n);
+//        System.out.println(l);
+        char mat[][]=new char[l][n];
+        int k=0;int c=0;
+        for(int i=1;i<=n;i++)
+        {
+            for(int j=0;j<n;j++)
+            {
+                if(key[j]==i)
+                {
+                    k=j;
+                }
+            }
+            for(int h=0;h<l;h++)
+            {
+                mat[h][k]=s[c];
+                c++;
+            }
+        }  
+        for(int i=0;i<l;i++)
+        {
+            for(int j=0;j<n;j++)
+            {
+                text=text+mat[i][j];
+            }
+        }   
+        return text;
+    }    
+}
+
+
+
+
+
+
+
+SECOND:
+
+import java.io.File;
+import java.util.Scanner;
+public class Doublet  
+{
+   static String encrypt(String p,String k)
+    {
+      Scanner sc2 = new Scanner(System.in);
+      int m,n,cnt=0;
+      String ciphertxt="";
+     
+       int[] key=new int[k.length()];
+       for(int i=0;i<k.length();i++)
+         key[i]=Integer.parseInt(Character.toString(k.charAt(i)));
+       n= k.length();  // no of columns
+       m= p.length()/n;// no of rows
+        
+       if(p.length()%n!=0)           
+           m=m+1;
+     
+       char[][] matrix= new char[m][n];
+       for(int i=0;i<m;i++)
+       {
+           for(int j=0;j<n;j++)
+           {
+               if(cnt<p.length())
+               {
+               matrix[i][j]=p.charAt(cnt);
+               }
+               else
+               {
+               matrix[i][j]=' ';    
+               }
+                cnt++;
+           }
+       }
+       System.out.println("\nBefore encryption matrix:");
+        for(int i=0;i<m;i++)
+       {
+           for(int j=0;j<n;j++)
+           {
+                 System.out.print(matrix[i][j]+" "); 
+           }
+            System.out.print("\n"); 
+       }
+        
+        for(int i=0;i<n;i++)
+       {
+           for(int j=0;j<m;j++)
+           {
+               ciphertxt=ciphertxt+matrix[j][key[i]-1];
+           }
+       }
+        return ciphertxt;   
+    }
+ 
+   static String decrypt(String p,String k)
+    {
+      Scanner sc2 = new Scanner(System.in);
+      int m,n,cnt=0;
+      String plaintxt="";
+      int[] key=new int[k.length()];
+      for(int i=0;i<k.length();i++)
+         key[i]=Integer.parseInt(Character.toString(k.charAt(i)));
+       n= k.length();
+       m= p.length()/n;
+       if(p.length()%n!=0)
+       {
+           m=m+1;
+       }
+       char[][] matrix= new char[m][n];
+       for(int i=0;i<n;i++)
+       {
+           for(int j=0;j<m;j++)
+           {
+               matrix[j][key[i]-1]=p.charAt(cnt);
+               cnt++;
+           }
+       }
+       System.out.println("\nAfter decryption matrix:");
+        for(int i=0;i<m;i++)
+       {
+           for(int j=0;j<n;j++)
+           {
+                 System.out.print(matrix[i][j]+" "); 
+                 plaintxt=plaintxt+matrix[i][j];
+           }
+            System.out.print("\n"); 
+       }
+        return plaintxt;
+    }
+     public static void main(String[] args) throws Exception 
+  { 
+      String p,k1="",k2="";
+      int r;
+      Scanner sc = new Scanner(System.in);
+  
+   File file = new File("input.txt");  
+  //File file = new File("test.pdf");        
+      Scanner input = new Scanner(file); 
+//      System.out.println("Enter Message");
+//      Scanner input = new Scanner(System.in);            
+//      
+       
+     
+      while (input.hasNext()) {
+      p=input.nextLine();
+      p=p.replace(" ", "");
+      System.out.println("Enter the key");
+      k1 = sc.nextLine(); 
+      String c1= encrypt(p,k1);
+      System.out.println("\nEnter the key2");
+      k2 = sc.nextLine(); 
+      String c2= encrypt(c1,k2);
+      System.out.println("\nCipher Text After Round 1: "+c1);
+      System.out.println("Cipher Text After round 2: "+c2);
+      String p1=decrypt(c2,k2);
+      String p2=decrypt(p1,k1);
+      System.out.println("\nPlain Text After Decryption Round 1: "+p1);
+      System.out.println("Plain Text After Decryption Round 2: "+p2); 
+  }
+ }
+}
+/* Output:
+1.Input as Short message:
+Enter Message
+Computer Science
+Enter the key
+2134
+Before encryption matrix:
+C o m p 
+u t e r 
+S c i e 
+n c e   
+
+Enter the key2
+3214
+
+Before encryption matrix:
+o t c c 
+C u S n 
+m e i e 
+p r e   
+
+Cipher Text After Round 1: otccCuSnmeiepre 
+Cipher Text After round 2: cSietueroCmpcne 
+
+After decryption matrix:
+o t c c 
+C u S n 
+m e i e 
+p r e   
+
+After decryption matrix:
+C o m p 
+u t e r 
+S c i e 
+n c e   
+Plain Text After Decryption Round 1: otccCuSnmeiepre 
+Plain Text After Decryption Round 2: ComputerScience*/
+
+
+--------------------------------------------------------------------------------------------------------------
+
+RANDOM PRIME NUMBER GENERATOR:
+
+import java.util.Random;
+
+public class PQ {
+    public static void main(String[] args) {
+        // TODO code application logic here
+            int num = 0; 
+        Random rand = new Random();
+         for(int o=0;o<2;o++){
+         num = rand.nextInt(10) + 1; 
+         while (!isPrime(num)) { 
+             num = rand.nextInt(1000) + 1;
+         } 
+          System.out.println(num); 
+        }
+        }
+         private static boolean isPrime(int inputNum)
+          {
+           if (inputNum <= 3 || inputNum % 2 == 0)         
+              return inputNum == 2 || inputNum == 3;
+             int divisor = 3; 
+            while ((divisor <= Math.sqrt(inputNum)) && (inputNum % divisor != 0)) 
+            divisor += 2;
+
+             return inputNum % divisor != 0; 
+
+             } 
+
+
+---------------------------------------------------------------------------------------------------------------
+
+RSA
+
+FIRST:
+
+import java.util.*;
+import java.math.*;
+import java.io.*;
+public class RSA {
+    static byte[] a = { };
+    static int p, q, N, phiN, e, d, ch,s=0;
+    static int c;
+    static BigInteger m;
+    static String s1 = "", resEnc = "", resD = "";
+    static byte[] sBytes={}, imageData, imageEncByteArray;
+    static BigInteger[] encBytes, decBytes;
+    private static int getPandQ() {
+        int min = 10, max = 50, range = max - min + 1, rand = 0;
+        for (int i = min; i < max; i++) {
+            rand = (int) (Math.random() * range) + min;
+            if (isPrime(rand) == true) {
+                break;
+            } }
+        return rand; }
+private static boolean isPrime(int num) {
+        int flag = 0;
+        for (int i = 2; i < num / 2; i++) {
+            if (num % i == 0) {
+                flag = 1;
+                break; }}
+        if (flag == 1) {
+            return false;}
+        return true;}
+    private static int gcd(int a, int b) {
+        if (b == 0) {
+            return a;
+        } else if (b > 0) {
+            return gcd(b, a % b);}
+        return 0; }
+public static void asciip() throws IOException{
+        byte[] b={};
+        System.out.println("Enter string");
+        Scanner sc=new Scanner(System.in);
+        String[] s=sc.nextLine().split(" ");
+        for(int i=0;i<s.length;i++){
+            System.out.print(" "+s[i]);}
+        for(int i=0;i<s.length;i++){
+            b=s[i].getBytes();
+             ByteArrayOutputStream baos = new ByteArrayOutputStream();
+             baos.write(sBytes);
+             baos.write(b);
+             sBytes = baos.toByteArray(); }
+    System.out.println("Byte Equivalent: ");
+      for(int i=0; i< sBytes.length ; i++){
+         System.out.print(sBytes[i] +" ");}}
+    private static void eulerTotient(int num) {
+        int res = 0;
+        System.out.print("Euler Totient Set Is : ");
+        for (int i = 0; i < num; i++) {
+            if (gcd(i, num) == 1) {
+                res++;}}
+        System.out.println("\nThe Value of Euler Totient Function is : \t" + res);}
+    private static void extendedEuclidean(int a, int b) {
+        int r1 = a, r2 = b, s1 = 1, s2 = 0, t1 = 0, t2 = 1, quo, rem, s = 0, t = 0;
+        while (r2 > 0) {
+            quo = r1 / r2;
+            rem = r1 - quo * r2;
+            r1 = r2;
+            r2 = rem;
+            s = s1 - quo * s2;
+            s1 = s2;
+            s2 = s;
+            t = t1 - quo * t2;
+            t1 = t2;
+            t2 = t;
+        }
+        System.out.println("\n\nGCD OF " + a + " AND " + b + " IS " + r1);
+        System.out.println("THE Two Remaining Integers Are : S = " + s1 + ", T = " + t1);
+        System.out.println("D CALCULATED FROM EXTENDED EUCLIDEAN : \t" + (phiN + t1) + "\n\n");}
+private static void findE() {
+        for (int i = 2; i < 1000; i++) {
+            if (gcd(i, phiN) == 1 && isPrime(i)) {
+                e = i;
+                break;}}}
+private static void findPhiN(int a, int b) {
+        int lcm = 0;
+        int gcd = gcd(a, b);
+        lcm = (a * b) / gcd;
+        phiN = lcm;}
+
+    private static void findD(int e) {
+        int i = 0;
+        while ((i * e) % phiN != 1) {
+            i++;
+            if ((i * e) % phiN == 1) {
+                d = i;
+                break;}} }
+private static void readDataFromFile() {
+FileReader file;
+        BufferedReader reader;
+        try {
+            file = new FileReader("C:\\Users\\ANUSHREE\\Desktop\\rsa_wd_img.docx");
+            reader = new BufferedReader(file);
+            String s2 = "";
+            byte[] b={};
+            while ((s2 = reader.readLine()) != null) {
+                s1 += s2; }
+            System.out.println("Data read: "+s1);
+            String s3[]=s1.split(" ");
+            for(int i=0;i<s3.length;i++){
+            System.out.print(" "+s3[i]);}
+        for(int i=0;i<s3.length;i++){
+            b=s3[i].getBytes();
+             ByteArrayOutputStream baos = new ByteArrayOutputStream();
+             baos.write(sBytes);
+             baos.write(b);
+             sBytes = baos.toByteArray(); }
+     
+        System.out.println("Byte Equivalent: ");
+      for(int i=0; i< sBytes.length ; i++){
+         System.out.print(sBytes[i] +" ");}
+        } catch (Exception e) {
+            e.printStackTrace();}}
+private static void writeDataIntoFile(String filename, String result) {
+        File file = new File("C:\\Users\\ANUSHREE\\Desktop\\op.txt" + filename);
+        FileWriter fr = null;
+        try {
+            fr = new FileWriter(file);
+            fr.write(result);
+        } catch (IOException e) {
+            e.printStackTrace();
+        } finally {
+            try {
+                fr.close();
+            } catch (IOException e) {
+                e.printStackTrace();}}}
+private static void factorizationAttack(int n) {
+        for (int i = 2; i <= Math.sqrt(n); i++) {
+            if (n % i == 0 && isPrime(i)) {
+                System.out.println("FIRST FACTOR : " + i);
+                System.out.println("SECOND FACTOR : " + n / i);}}}
+private static void timingAttack(byte[] sb) {
+        int x;
+        String dd = Integer.toBinaryString(d);
+        char[] ddc = dd.toCharArray();
+        System.out.println("Binary Equivalent of d : " + dd);
+        for (byte b : sb) {
+            x=b;
+            for (int i = 1; i < dd.length(); i++) {
+                x = (int) (Math.pow(x, 2)%N);
+                if(ddc[i]=='1'){
+                    x = (x*b)%N;
+                }}
+            System.out.print(x + " ");}}
+private static void initialCalculations() {
+        int p = getPandQ();
+        int q = getPandQ();
+        System.out.println("\nP : \t" + p + "\nQ : \t" + q);
+        N = p * q;
+        phiN = (p - 1) * (q - 1);
+        findE();
+        findD(e);
+        eulerTotient(N);
+        extendedEuclidean(phiN, e);
+        factorizationAttack(N);
+       byte[] temp = {82, 85, 67, 72, 73, 84, 32, 66, 72, 65, 82, 68, 87, 65, 74};
+        timingAttack(sBytes);
+        System.out.println("");
+       System.out.println("E : \t" + e + "\nD : \t" + d + "\nPhiN : \t" + phiN + "\nN : \t" + N);
+        System.out.println("\n\nPUBLIC KEY : \t(N : " + N + ", E : " + e + ")");
+        System.out.println("PRIVATE KEY : \t(N : " + N + ", D : " + d + ")");
+    }
+private static void encryptRSA(byte[] sBytes) {
+        encBytes = new BigInteger[sBytes.length];
+        int i = 0;
+        BigInteger m;
+        for (byte sByte : sBytes) {
+            m = BigInteger.valueOf(sByte);
+            encBytes[i] = (m.pow(e)).mod(BigInteger.valueOf(N));
+            i++;}
+for (BigInteger encByte : encBytes) {
+            byte v = (byte) encByte.intValue();
+            resEnc += (char) v;}
+System.out.println("");
+        System.out.println("ENCRYPTED BYTES : \t" + Arrays.toString(encBytes));
+        System.out.println("ENCRYPTED TEXT : \t" + resEnc);
+        writeDataIntoFile("encRSA.txt", resEnc);}
+private static void decryptRSA(BigInteger[] encBytes) {
+        decBytes = new BigInteger[sBytes.length];
+        int j = 0;
+        for (BigInteger encByte : encBytes) {
+            decBytes[j] = (encByte.pow(d)).mod(BigInteger.valueOf(N));
+            j++;}
+for (BigInteger decByte : decBytes) {
+            byte v = (byte) decByte.intValue();
+            resD += (char) v;}
+        System.out.println("DECRYPTED BYTES : \t" + Arrays.toString(decBytes));
+        System.out.println("DECRYPTED TEXT : \t" + resD);
+        writeDataIntoFile("decRSA.txt", resD); }
+public static void main(String[] args) throws IOException {
+        Scanner sc = new Scanner(System.in);
+System.out.println("CHOOSE WHAT YOU WANT TO ENCRYPT :\n1. READ DATA FROM FILE\n2. PROVIDE CUSTOM INPUT");
+        ch = sc.nextInt();
+        System.out.println("");
+        switch (ch) {
+            case 1:
+                readDataFromFile();
+                initialCalculations();
+                encryptRSA(sBytes);
+                decryptRSA(encBytes);
+                break;
+case 2:
+                asciip();
+                initialCalculations();
+                encryptRSA(sBytes);
+                decryptRSA(encBytes);
+                break;
+default:
+                System.out.println("PLEASE ENTER A VALID CHOICE");
+                break;
+        }}}
+Output:
+Input 1: Short message:
+Enter string
+Good morning! 
+ Byte Equivalent: 
+71 111 111 100 109 111 114 110 105 110 103 33 
+P : 	17
+Q : 	17
+Euler Totient Set Is : 
+The Value of Euler Totient Function is : 	272GCD OF 256 AND 3 IS 1
+THE Two Remaining Integers Are : S = 1, T = -85
+D CALCULATED FROM EXTENDED EUCLIDEAN : 	171
+
+
+FIRST FACTOR : 17
+SECOND FACTOR : 17
+Binary Equivalent of d : 10101011
+7 117 117 43 133 117 176 155 279 155 103 33 
+E : 	3
+D : 	171
+PhiN : 	256
+N : 	289
+PUBLIC KEY : 	(N : 289, E : 3)
+PRIVATE KEY : 	(N : 289, D : 171)
+ENCRYPTED BYTES : 	[129, 83, 83, 60, 20, 83, 130, 155, 180, 155, 18, 101]
+ENCRYPTED TEXT : 	?SS<S????e
+DECRYPTED BYTES : 	[54, 264, 264, 32, 177, 264, 80, 110, 156, 110, 18, 101]
+DECRYPTED TEXT :  Pn?ne
+BUILD SUCCESSFUL (total time: 27 seconds)
+
+
+
+
+
+
+SECOND:
+
+
+import java.math.BigInteger;
+import java.util.Random;
+import java.util.Scanner;
+
+public class RSA {
+
+    public static void main(String[] args) {
+        Scanner sc = new Scanner(System.in);
+        int n, fi, e, k, d, c;
+        System.out.println("-------Randomly drawn values-------");
+        Random random = new Random();
+        BigInteger p1 = BigInteger.probablePrime(5, random);
+        System.out.println("Value of p is " + p1);
+        BigInteger q1 = BigInteger.probablePrime(5, random);
+        System.out.println("Value of q is " + q1);
+        int p, q;
+        p = p1.intValue();
+        q = q1.intValue();
+        BigInteger e1 = BigInteger.probablePrime(7, random);
+        while (e1.compareTo(p1) == -1 && e1.compareTo(q1) == -1) {
+            e1 = BigInteger.probablePrime(7, random);
+        }
+        e = e1.intValue();
+        n = p * q;
+        System.out.println("Value of n is " + n);
+        Long N = Long.valueOf(n);
+        factorization(N);
+        fi = (p - 1) * (q - 1);
+        System.out.println("Value of phi(n) is " + fi);
+
+        k = eucledian(fi, e, n);
+        System.out.println("Value of d from Extended Euclidean method is " + k);
+
+        d = k % fi;
+        System.out.println("Value of d is " + d);
+        // System.out.println(" Public key = "+e+",");
+        //System.out.println(" Private key = "+d+",");
+
+        System.out.println("Enter the message: ");
+        int m = sc.nextInt();
+
+        c = (int) (Math.pow(m, e)) % n;
+        System.out.println("Encryption = " + c);
+
+        int m1 = (int) (Math.pow(c, d)) % n;
+        System.out.println("Decryption = " + m1);
+
+    }
+
+    static int eucledian(int fi, int e, int n) // To find the inverse 
+    {
+        int r1 = fi, r2 = e, t1 = 0, t2 = 1, q=0, r, t = 0, b1;
+        while (r2 > 0) {
+            q = r1 / r2;
+            r = r1 - (q * r2);
+            r1 = r2;
+            r2 = r;
+            t = t1 - (q * t2);
+            t1 = t2;
+            t2 = t;
+        }
+
+        if (r1 == 1) {
+            return t1;
+        }
+        return 0;
+    }
+
+    static public void factorization(long N) {
+        long a = (long) Math.ceil(Math.sqrt(N));
+        long b2 = a * a - N;
+        while (!square(b2)) {
+            a++;
+            b2 = a * a - N;
+        }
+        long r1 = a - (long) Math.sqrt(b2);
+        long r2 = N / r1;
+        System.out.println("\nRoots of n from Factorization attack are " + r1 + " , " + r2);
+    }
+
+    static public boolean square(long N) {
+        long sqr = (long) Math.sqrt(N);
+        if (sqr * sqr == N || (sqr + 1) * (sqr + 1) == N) {
+            return true;
+        }
+        return false;
+    }
+
+}
+
+
+
+
+
+
+THIRD:
+
+import java.io.*;
+import java.util.*;
+import java.math.*;
+
+public class RSA2
+{
+ public static void main(String args[]) throws IOException
+ {
+ Scanner sc=new Scanner(System.in);
+ int p,q,n,z,d=0,e,i;
+  int w;
+ RSA2 rsa = new RSA2();
+ do{
+  System.out.println("Enter 1:RSA,2:Euclidean,3:Extended Euclidean: 4: Encrypt File 5: Euler totient");
+  int ch = sc.nextInt();
+  switch(ch){
+      case 1:
+          rsa.RSA2();
+          break;
+      case 2:
+          rsa.euclidiean();
+          break;
+      case 3:
+          rsa.xeuclidiean();
+          break;
+      case 4:
+          RSA3 rsa1 = new RSA3();
+        DataInputStream in = new DataInputStream(System.in);
+        String teststring = "";
+        File f=new File("D:\\IS\\input.txt");
+        File f1=new File("D:\\IS\\output.txt");
+        BufferedReader br=new BufferedReader(new FileReader(f));
+        BufferedWriter b1=new BufferedWriter(new FileWriter(f1));
+        String c;
+        while((c=br.readLine())!=null){
+            teststring=teststring+c;
+        }
+        byte[] encrypted = rsa1.encrypt(teststring.getBytes());
+        // decrypt
+        byte[] decrypted = rsa1.decrypt(encrypted);
+        String d1=new String(decrypted);
+        b1.write(d1);
+      //  System.out.println("Decrypting Bytes: " + bytesToString(decrypted));
+        System.out.println("Decrypted String: " + new String(decrypted));
+        br.close();
+        b1.close();
+         break; 
+      case 5:
+          int n1; 
+    System.out.println("Enter value of n");
+    Scanner scan=new Scanner(System.in);
+    n1=scan.nextInt();
+        System.out.println("phi(" + n1 +  
+                           ") = " + phi(n1)); 
+  }
+  System.out.println("Do you want to continue ,if yes enter 1");
+  w = sc.nextInt();
+ }while(w==1);
+ }
+
+ void RSA2(){
+     Scanner sc=new Scanner(System.in);
+ System.out.println("Enter the number to be encrypted and decrypted");
+ int msg=sc.nextInt();
+ int p,q;
+
+     System.out.println("Enter 1st prime number p");
+ p=sc.nextInt();
+ System.out.println("Enter 2nd prime number q");
+ q=sc.nextInt();
+
+ int n=p*q;
+ int z=(p-1)*(q-1);
+ System.out.println("the value of z = "+z);
+ int e;
+ for(e=2;e<z;e++)
+ {
+ if(gcd(e,z)==1)
+ {
+ break;
+ }
+ }int d=0;
+ System.out.println("the value of e = "+e);
+ for(int i=0;i<=9;i++)
+ {
+ int x=1+(i*z);
+ if(x%e==0)
+ {
+ d=x/e;
+ break;
+ }
+ }BigInteger msgback; double c;
+ System.out.println("the value of d = "+d);
+ c=(Math.pow(msg,e))%n;
+ System.out.println("Encrypted message is :");
+ System.out.println(c);
+
+ BigInteger N = BigInteger.valueOf(n);
+
+ BigInteger C = BigDecimal.valueOf(c).toBigInteger();
+ msgback = (C.pow(d)).mod(N);
+ System.out.println("Decrypted message is :");
+ System.out.println(msgback);
+
+ }
+
+ static int gcd(int e, int z)
+ {
+ if(e==0)
+ return z;
+ else
+ return gcd(z%e,e);
+ }
+   void xeuclidiean ()
+   {
+       int q,r,r1,r2,s1=1,s2=0,s,t1=0,t2=1,t;
+       Scanner sc = new Scanner(System.in);
+       System.out.println("Enter r1  ");
+       r1 = sc.nextInt();
+       System.out.println("Enter r2 ");
+       r2 = sc.nextInt();
+       int n=r1;
+       int b=r2;
+       System.out.println("q \t r1 \t r2 \t r \t s1 \t s2 \t s \t t1 \t t2 \t t");
+       while (r2>0)
+       {
+           q=r1/r2;
+           r = r1-(q*r2);
+           r1=r2;
+           r2=r;
+           t=t1-(q*t2);
+           t1=t2;
+           t1=t;
+           s=s1-(s2*q);
+           s1=s2;
+           s2=s;
+           System.out.println(q+" \t "+r1+" \t "+r2+" \t "+r+" \t "+s1+" \t "+s2+" \t "+s+" \t "+t1+" \t "+t2+" \t"+ t);
+       }
+       System.out.println("GCD is  "+r1);
+   }
+   static int phi(int n) 
+{ 
+    // Initialize result as n 
+    int result = n;  
+    // Consider all prime factors  
+    // of n and subtract their 
+    // multiples from result 
+    for (int p = 2; p * p <= n; ++p) 
+    { 
+          
+        // Check if p is  
+        // a prime factor. 
+        if (n % p == 0)  
+        { 
+              
+            // If yes, then update 
+            // n and result 
+            while (n % p == 0) 
+                n /= p; 
+            result -= result / p; 
+        } 
+    } 
+  
+    // If n has a prime factor 
+    // greater than sqrt(n) 
+    // (There can be at-most  
+    // one such prime factor) 
+    if (n > 1) 
+        result -= result / n; 
+    return result; 
+} 
+void euclidiean ()
+   {
+       int q,r,r1,r2,s1=1,s2=0,s,t1=0,t2=1,t;
+       Scanner sc = new Scanner(System.in);
+       System.out.println(" Enter r1  ");
+       r1 = sc.nextInt();
+       System.out.println(" Enter r2 ");
+       r2 = sc.nextInt();
+       int n=r1;
+       int b=r2;
+       while (r2>0)
+       {
+           q=r1/r2;
+           r = r1-(q*r2);
+           r1=r2;
+           r2=r;
+
+       }
+       System.out.println(" GCD is  "+r1);
+
+
+
+   }
+
+}
+
+class RSA3
+{
+    private BigInteger p;
+    private BigInteger q;
+    private BigInteger N;
+    private BigInteger phi;
+    private BigInteger e;
+    private BigInteger d;
+    private int        bitlength = 1024;
+    private Random     r;
+ 
+    public RSA3()
+    {
+        r = new Random();
+        p = BigInteger.probablePrime(bitlength, r);
+        q = BigInteger.probablePrime(bitlength, r);
+        N = p.multiply(q);
+        phi = p.subtract(BigInteger.ONE).multiply(q.subtract(BigInteger.ONE));
+       
+        System.out.println("phi is"+phi);
+        e = BigInteger.probablePrime(bitlength / 2, r);
+        while (phi.gcd(e).compareTo(BigInteger.ONE) > 0 && e.compareTo(phi) < 0)
+        {
+            e.add(BigInteger.ONE);
+        }
+         System.out.println("e is"+e);
+        d = e.modInverse(phi);
+        System.out.println("d is"+d);
+    }
+ 
+    public RSA3(BigInteger e, BigInteger d, BigInteger N)
+    {
+        this.e = e;
+        this.d = d;
+        this.N = N;
+    }
+ 
+  
+    private static String bytesToString(byte[] encrypted)
+    {
+        String test = "";
+        for (byte b : encrypted)
+        {
+            test += Byte.toString(b);
+        }
+        return test;
+    }
+ 
+    // Encrypt message
+    public byte[] encrypt(byte[] message)
+    {
+        return (new BigInteger(message)).modPow(e, N).toByteArray();
+    }
+ 
+    // Decrypt message
+    public byte[] decrypt(byte[] message)
+    {
+        return (new BigInteger(message)).modPow(d, N).toByteArray();
+    }
+}
+
+
+---------------------------------------------------------------------------------------------------------------
+
+DIFFIE HELLMAN:
+
+FIRST:
+SERVER.java:
+
+import java.util.*;
+import java.io.*;
+import java.net.*;
+import java.util.Scanner;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+class Multiserver{
+Multiserver() throws IOException{
+ServerSocket s=new ServerSocket(6000);
+Socket currentsocket;
+while(true){
+currentsocket=s.accept();
+System.out.println("Multiple server Ready");
+new ThreadClient(currentsocket);
+}
+}
+public static void primitive_root(int g,int n){
+ArrayList<Integer>a=new ArrayList<>();
+for(int i=0;i<n-1;++i){
+if(a.contains((int)Math.pow(g,i)%n)!=true){
+a.add((int)Math.pow(g,i)%n);
+}}if(a.size()==n-1) System.out.println("Primitive Root");}
+private  class ThreadClient extends Thread{
+Socket newsock;
+DataInputStream din;
+DataOutputStream dout;
+int ya,yb,num;
+int p,g;
+ThreadClient(Socket se) throws IOException{
+newsock=se;
+din=new DataInputStream(newsock.getInputStream());
+dout=new DataOutputStream(newsock.getOutputStream());
+ya=yb=0;num=0;p=g=0;
+start();}
+@Override
+synchronized  public void run(){
+Scanner sc=new Scanner(System.in);
+while(true){
+try {
+System.out.println("----ALICE----");
+System.out.println(" value of n");
+p= sc.nextInt();
+System.out.println("Value of g");
+g= sc.nextInt();
+//primitive_root(g,p);
+System.out.println("Calculate Ya? 1-yes");
+int i =sc.nextInt();
+yb=0;if(i==1)
+{
+int num= (int) (Math.random()*10);
+System.out.println("Random number generated by alice is "+num);
+ya=(int) (Math.pow(g, num)%p);
+dout.writeInt(ya);
+yb=din.readInt();
+System.out.println("Received from bob "+yb);
+int key=(int) (Math.pow(yb, num)% p);
+System.out.println("key is "+key);
+}
+} catch (IOException ex) {
+Logger.getLogger(Multiserver.class.getName()).log(Level.SEVERE, null, ex);
+}}
+}}}
+public class Alice{
+public static void main(String[] args) throws IOException {
+new Multiserver();
+}}
+
+
+CLIENT.java:
+
+public class Bob {
+public static void main(String[] args) throws IOException,UnknownHostException {
+Socket s2 =new Socket("localhost",6000);
+System.out.println("Client Created");
+DataInputStream din=new DataInputStream(s2.getInputStream());
+DataOutputStream dout=new DataOutputStream(s2.getOutputStream());
+Scanner sc=new Scanner(System.in);
+int p,g;int ya,yb;
+while(true){
+System.out.println("----BOB----");
+System.out.println(" value of n");
+p= sc.nextInt();
+System.out.println("Value of g");
+g= sc.nextInt();
+yb=0;
+System.out.println(" calculate Ya? yes -1 ");
+int i = sc.nextInt();
+if(i==1){
+int num= (int) (Math.random()*10);
+System.out.println("Random number generated by bob is "+num);
+ya=(int) (Math.pow(g, num)%p);
+yb=din.readInt();
+System.out.println("Received from alice "+yb);
+dout.writeInt(ya);
+int key=(int) (Math.pow(yb,num)% p);
+System.out.println("key is "+key);
+}}}}
+
+
+
+SECOND:
+SERVER.java:
+
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
+import java.io.IOException;
+import java.net.ServerSocket;
+import java.net.Socket;
+import java.util.Scanner;
+
+public class DiffieHelllmanServer {
+ 
+    public static void main(String[] args) throws IOException 
+    {
+     Scanner sc=new Scanner(System.in); 
+      ServerSocket s=new ServerSocket(2222);
+      int p=7,g=11;
+      
+      int n= (int) (Math.random()*20);
+        System.out.println("SERVER SIDE");
+        System.out.println("Random number  generated by user A:"+n);
+      int a=(int) (Math.pow(g,n)%p);
+      Socket ss=s.accept();
+       DataOutputStream o=new DataOutputStream(ss.getOutputStream());
+        DataInputStream i=new DataInputStream(ss.getInputStream());
+        o.writeInt(a);
+        int b=i.readInt();
+        System.out.println("From user B to A: "+b);
+        int key=(int) (Math.pow(b, n)% p);
+        System.out.println("Calculated Key: "+key);
+     
+        ServerSocket s1=new ServerSocket(2225);
+        }
+  }
+
+CLIENT.java:
+
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
+import java.io.IOException;
+import java.net.ServerSocket;
+import java.net.Socket;
+import java.util.Scanner;
+
+public class DiffieHellmanClient {
+    
+   
+    public static void main(String[] args) throws IOException 
+    {
+     Scanner sc=new Scanner(System.in); 
+      Socket ss=new Socket("localhost",2222);
+      
+      int p=7,g=11;
+      int n= (int) (Math.random()*20);
+      
+        System.out.println("CLIENT SIDE");
+        System.out.println("Random number generated by user B:"+n);
+      int b=(int) (Math.pow(g,n)%p);
+      
+       DataOutputStream o=new DataOutputStream(ss.getOutputStream());
+        DataInputStream i=new DataInputStream(ss.getInputStream());
+        o.writeInt(b);
+        int a=i.readInt();
+        System.out.println("From user A to B: "+a);
+        int key=(int) (Math.pow(a, n)% p);
+       // System.out.println("Calculated Key :"+key);
+         System.out.println("Man in middle attack!!!");
+        System.out.println("Calculated key: "+5);
+        System.out.println("E=Wrong key transmitted");
+      
+    }
+   
+}
+
+---------------------------------------------------------------------------------------------------------------
+
+MAN IN MIDDLE (DIFFIE HELLMAN):
+
+SERVER:
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
+import java.io.IOException;
+import java.net.ServerSocket;
+import java.net.Socket;
+import java.util.Scanner;
+public class mimServer {
+  public static void main(String[] args) throws IOException   {
+     Scanner sc=new Scanner(System.in); 
+      ServerSocket s=new ServerSocket(2222);
+      int p=7,g=11;
+      int a= (int) (Math.random()*20);
+        System.out.println("SERVER SIDE");
+        System.out.println("Public key of user A(a):"+a);
+      int A=(int) (Math.pow(g,a)%p);
+        System.out.println("Private key of A: "+A);
+      Socket ss=s.accept();
+       DataOutputStream o=new DataOutputStream(ss.getOutputStream());
+        DataInputStream i=new DataInputStream(ss.getInputStream());
+        int z= (int) (Math.random()*20);
+        System.out.println("Intruder's public key(z): "+z);
+        int Z=(int)(Math.pow(g,z)%p);
+        System.out.println("Intruder's private key (Z): "+Z);
+        o.writeInt(Z);
+        o.write(A);
+        int B=i.readInt();
+        int fkey=(int)(Math.pow(Z,a)%p);
+        System.out.println("Faulty shared key calculated by a: "+fkey);
+        System.out.println("Actual private key of B: "+B);
+        int key=(int) (Math.pow(B, a)% p);
+        System.out.println("Actual shared key: "+key);}}
+
+
+CLIENT:
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
+import java.io.IOException;
+import java.net.ServerSocket;
+import java.net.Socket;
+import java.util.Scanner;
+public class mimClient {
+        public static void main(String[] args) throws IOException {
+     Scanner sc=new Scanner(System.in); 
+      Socket ss=new Socket("localhost",2222);
+      int p=7,g=11;
+      int b= (int) (Math.random()*20);
+        System.out.println("CLIENT SIDE");
+        System.out.println("Public key of user B:"+b);
+      int B=(int) (Math.pow(g,b)%p);
+        System.out.println("Private key of user B:"+B);
+       DataOutputStream o=new DataOutputStream(ss.getOutputStream());
+        DataInputStream i=new DataInputStream(ss.getInputStream());
+             o.writeInt(B);
+        int Z=i.readInt();
+       System.out.println("Faulty key sent by intruder:"+Z);
+        int fkey=(int) (Math.pow(Z, b)% p);
+        System.out.println("Faulty shared key calculated by B :"+fkey);    }}
+
+
+---------------------------------------------------------------------------------------------------------------
+
+VIGENERE:
+
+import java.io.File;
+import java.io.FileNotFoundException;
+    import java.util.*;
+public class vigenerecipher {
+    public static void main(String []args) throws FileNotFoundException {
+        String plaintext=null;
+        File f=new File("input.txt");
+        //File f=new File("test.pdf");
+        Scanner sc=new Scanner(f);
+        System.out.println("Enter the plaintext");
+        while(sc.hasNext())
+        {
+         plaintext = sc.nextLine();
+        }
+        String key = "testkey";
+        String final_key = "", ciphertext = "";
+        
+        ArrayList<ArrayList<Character>> vignere = new ArrayList<>();
+        String alphabet = "abcdefghijklmnopqrstuvwxyz";
+        for (int i = 0; i < 26; i++) {
+            ArrayList<Character> row_vignere = new ArrayList<>();
+            for (int j = 0; j < 26; j++)
+                row_vignere.add(alphabet.charAt((i + j) % 26));
+            vignere.add(row_vignere);
+        }
+        
+        for (int i = 0, j = 0; i < plaintext.length(); i++) {
+            if (plaintext.charAt(i) >= 'a' && plaintext.charAt(i) <= 'z')
+                final_key += key.charAt((j++) % key.length());
+            else
+                final_key += plaintext.charAt(i);
+        }
+        for (int i = 0; i < plaintext.length(); i++) {
+            if (plaintext.charAt(i) >= 'a' && plaintext.charAt(i) <= 'z')
+                ciphertext += vignere.get(alphabet.indexOf("" + final_key.charAt(i))).get(alphabet.indexOf("" + plaintext.charAt(i)));
+            else
+                ciphertext += plaintext.charAt(i);
+        }
+        System.out.println("Polyalphabetic Cipher [Encryption]");
+        System.out.println("Plain Text  : " + plaintext);
+        System.out.println("Key         : " + key);
+        System.out.println("Cipher Text : " + ciphertext);
+    }
+}
+
+Output:
+1.Input as Short Message:
+Enter the plaintext
+helloworldhowareyou
+Polyalphabetic Cipher [Encryption]
+Plain Text  : helloworldhowareyou
+Key         : testkey
+Cipher Text : aideyamkpvayaykiqhe
+BUILD SUCCESSFUL (total time: 13 seconds)
+
+---------------------------------------------------------------------------------------------------------------
+
+CBC USING DES:
+
+FIRST:
+import java.io.*;
+import java.security.*;
+import java.security.spec.*;
+import javax.crypto.Cipher;
+import javax.crypto.*;
+import javax.crypto.spec.IvParameterSpec;
+
+public class JavaDESEncryption {
+    private static Cipher encrypt;
+    private static Cipher decrypt;
+    private static final byte[] initialization_vector = { 22, 33, 11, 44, 55, 99, 66, 77 };
+    
+    public static void main(String[] args) {
+    String clearFile = "D:\\IS\\input.jpg";
+    String encryptedFile = "D:\\IS\\encrypted.jpg";
+    String decryptedFile = "D:\\IS\\decrypted.jpg";
+    try {
+    SecretKey secret_key = KeyGenerator.getInstance("DES").generateKey();
+    AlgorithmParameterSpec alogrithm_specs = new IvParameterSpec( initialization_vector);
+          // set encryption mode ...
+    encrypt = Cipher.getInstance("DES/CBC/PKCS5Padding");
+    encrypt.init(Cipher.ENCRYPT_MODE, secret_key, alogrithm_specs);
+    // set decryption mode
+    decrypt = Cipher.getInstance("DES/CBC/PKCS5Padding");
+    decrypt.init(Cipher.DECRYPT_MODE, secret_key, alogrithm_specs);
+    // encrypt file
+    encrypt(new FileInputStream(clearFile), new FileOutputStream(encryptedFile));
+            // decrypt file
+    decrypt(new FileInputStream(encryptedFile), new FileOutputStream(decryptedFile)); System.out.println("End of Encryption/Decryption procedure!");
+        } 
+    catch (Exception e) {
+e.printStackTrace();
+        }
+    }
+    private static void encrypt(InputStream input, OutputStream output) throws IOException {
+        output = new CipherOutputStream(output, encrypt);
+        writeBytes(input, output);
+    }
+    
+    private static void decrypt(InputStream input, OutputStream output) throws IOException {
+        input = new CipherInputStream(input, decrypt);
+        writeBytes(input, output);
+    }
+    private static void writeBytes(InputStream input, OutputStream output)    throws IOException {
+        byte[] writeBuffer = new byte[512];
+        int readBytes = 0;
+        while ((readBytes = input.read(writeBuffer)) >= 0) {
+            output.write(writeBuffer, 0, readBytes);
+           }
+        output.close();
+        input.close();
+       }
+    }
+
+
+
+
+SECOND:
+
+import java.io.FileInputStream;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.security.InvalidAlgorithmParameterException;
+import java.security.InvalidKeyException;
+import java.security.NoSuchAlgorithmException;
+import java.security.spec.AlgorithmParameterSpec;
+import javax.crypto.Cipher;
+import javax.crypto.CipherInputStream;
+import javax.crypto.CipherOutputStream;
+import javax.crypto.KeyGenerator;
+import javax.crypto.NoSuchPaddingException;
+import javax.crypto.SecretKey;
+import javax.crypto.spec.IvParameterSpec;
+public class CBC {
+    private static Cipher encrypt;
+    private static Cipher decrypt;
+    private static final byte[] initialization_vector = { 22, 33, 11, 44, 55, 99, 66, 77 };
+ public static void main(String[] args) {
+        String clearFile = "C:\\Users\\cse\\Desktop\\input.txt";
+        String encryptedFile = "C:\\Users\\cse\\Desktop\\encrypted.txt";
+        String decryptedFile ="C:\\Users\\cse\\Desktop\\decrypted.txt";
+        try {
+            SecretKey secret_key = KeyGenerator.getInstance("DES")
+                    .generateKey();
+            AlgorithmParameterSpec alogrithm_specs = new IvParameterSpec(
+                    initialization_vector);
+          // set encryption mode ...
+            encrypt = Cipher.getInstance("DES/CBC/PKCS5Padding");
+            encrypt.init(Cipher.ENCRYPT_MODE, secret_key, alogrithm_specs);
+            // set decryption mode
+            decrypt = Cipher.getInstance("DES/CBC/PKCS5Padding");
+            decrypt.init(Cipher.DECRYPT_MODE, secret_key, alogrithm_specs);
+            encrypt(new FileInputStream(clearFile), new FileOutputStream(
+                    encryptedFile));
+            decrypt(new FileInputStream(encryptedFile), new FileOutputStream(
+                    decryptedFile));
+            System.out.println("End of Encryption/Decryption procedure!");
+        } catch (NoSuchAlgorithmException | NoSuchPaddingException
+                | InvalidKeyException | InvalidAlgorithmParameterException
+                | IOException e) {
+            e.printStackTrace();
+        }
+    }
+    private static void encrypt(InputStream input, OutputStream output)
+            throws IOException {
+       output = new CipherOutputStream(output, encrypt);
+        writeBytes(input, output);
+    }
+    private static void decrypt(InputStream input, OutputStream output)
+            throws IOException {
+        input = new CipherInputStream(input, decrypt);
+        writeBytes(input, output);
+   }
+    private static void writeBytes(InputStream input, OutputStream output)
+            throws IOException {
+        byte[] writeBuffer = new byte[512];
+        int readBytes = 0;
+        while ((readBytes = input.read(writeBuffer)) >= 0) {
+            output.write(writeBuffer, 0, readBytes);
+        }
+       output.close();
+        input.close();
+    }
+}
+
+
+---------------------------------------------------------------------------------------------------------------
+
+RAIL FENCE CIPHER:
+
+import java.util.Arrays;
+import java.util.Scanner;
+
+public class RailFence {
+    public static void main(String[] args) {
+        Scanner sc = new Scanner(System.in); 
+        System.out.println("Enter string:");
+        String input = sc.nextLine();
+        
+        char[] inparr = input.toCharArray();
+        
+        System.out.println("Enter key:");
+        int key = sc.nextInt();
+        //System.out.println(inparr);
+        char[][] output = new char[key][inparr.length];
+        //System.out.println(inparr.length);
+        for(int i=0;i<key;i++)
+        {
+            for(int j=0;j<inparr.length;j++)
+            {
+                output[i][j]='$';
+            }
+        }
+        int xcor=0; int ycor=0; int in=0;
+        while(in < inparr.length)
+        {
+            while(xcor <= (key-1) && in < inparr.length)
+            {
+                if(inparr[in] == ' ')
+                {
+                    output[xcor][ycor] = ' ';
+                    in++;
+                }
+                    
+                else
+                    output[xcor][ycor]=inparr[in++];
+                xcor++; ycor++;
+            }
+            xcor=xcor-2; 
+            while(xcor >= 0 && in < inparr.length)
+            {
+                if(inparr[in] == ' ')
+                {
+                   output[xcor][ycor] = ' ';
+                   in++;
+                }    
+                else
+                    output[xcor][ycor]=inparr[in++];
+                xcor--; ycor++;
+            }
+            xcor=xcor+2; 
+        }
+        
+        for(int i=0;i<key;i++)
+        {
+            //System.out.println("");
+            for(int j=0;j<inparr.length;j++)
+            {
+                if(output[i][j] != '$')
+                {
+                    System.out.print(output[i][j]);
+                }
+            }
+        }    
+        
+    }
+    
+}
+
+--------------------------------------------------------------------------------------------------------------
+
+FREQUENCY COUNT:
+
+import static is.SubstitutionCipher.getRandomKey;
+import java.util.*;
+ import java.io.*;
+public class FreqCount 
+{
+  public static void main(String[] args) 
+    {
+        
+        System.out.println();
+        int count[] = new int[126];
+        char ch[] = new char[126];
+        for(int k=32;k<126;k++)
+        {
+            ch[k]= (char)(k);
+        }
+        String ip ="C:\\Users\\user\\Desktop\\ip1.txt";
+        try 
+        {
+            FileReader fr = new FileReader(new File(ip));
+            int i = fr.read();
+            String enc ="";
+            while(i!=-1)
+            {
+                enc += (char)i;
+                i = fr.read();
+            }
+            
+            System.out.println("Input file contents:\n\n"+enc);
+            int key[] = new int[enc.length()];
+            System.out.print("Random key generated:\t");
+            for(int j=0;j<key.length;j++)
+            {
+                key[j] = getRandomKey();
+                System.out.print(key[j]+" ");
+            }
+            enc = SubstitutionCipher.encrypt(enc, key);
+            System.out.println("\n\nEncrypted Text:\n\n"+enc);
+            for(int j=0;j<enc.length();j++)
+            {
+                int m = enc.charAt(j);
+                count[m]++;
+            }
+            for(int j=32;j<126;j++)
+            {
+                if(j==32)
+                    System.out.print("<space>  ");
+                else
+                    System.out.print(ch[j]+"  ");
+                for(int k=0;k<count[j];k++)
+                {
+                     System.out.print("*");                    
+                }
+               System.out.println(" ");
+               
+           }
+       
+        }
+        catch (Exception ex) 
+        {
+            ex.printStackTrace();
+        }
+    }
+   
+}
+
+---------------------------------------------------------------------------------------------------------------
+
+S DES:
+
+import java.io.*;
+import java.lang.*;
+
+class SDES
+       {
+        public int K1, K2;
+        public static final int P10[] = { 3, 5, 2, 7, 4, 10, 1, 9, 8, 6};
+        public static final int P10max = 10;
+        public static final int P8[] = { 6, 3, 7, 4, 8, 5, 10, 9};
+        public static final int P8max = 10;
+        public static final int P4[] = { 2, 4, 3, 1};
+        public static final int P4max = 4;
+        public static final int IP[] = { 2, 6, 3, 1, 4, 8, 5, 7};
+        public static final int IPmax = 8;
+        public static final int IPI[] = { 4, 1, 3, 5, 7, 2, 8, 6};
+        public static final int IPImax = 8;
+        public static final int EP[] = { 4, 1, 2, 3, 2, 3, 4, 1};
+        public static final int EPmax = 4;
+        public static final int S0[][] = {{ 1, 0, 3, 2},{ 3, 2, 1, 0},{ 0, 2, 1,
+                                                              3},{ 3, 1, 3, 2}};
+        public static final int S1[][] = {{ 0, 1, 2, 3},{ 2, 0, 1, 3},{ 3, 0, 1,
+                                                              2},{ 2, 1, 0, 3}};
+       
+       public static int permute( int x, int p[], int pmax)
+       {
+         int y = 0;
+         for( int i = 0; i < p.length; ++i)
+          {
+            y <<= 1;
+            y |= (x >> (pmax - p[i])) & 1;
+        }
+         return y;
+       }
+       
+       public static int F( int R, int K)
+       {
+          int t = permute( R, EP, EPmax) ^ K;
+          int t0 = (t >> 4) & 0xF;
+          int t1 = t & 0xF;
+          t0 = S0[ ((t0 & 0x8) >> 2) | (t0 & 1) ][ (t0 >> 1) & 0x3 ];
+          t1 = S1[ ((t1 & 0x8) >> 2) | (t1 & 1) ][ (t1 >> 1) & 0x3 ];
+           t = permute( (t0 << 2) | t1, P4, P4max);
+         return t;
+       
+  }
+
+  public static int fK( int m, int K)
+        {
+            int L = (m >> 4) & 0xF;
+            int R = m & 0xF;
+            return ((L ^ F(R,K)) << 4) | R;
+        }
+       
+  public static int SW( int x)
+  {
+   return ((x & 0xF) << 4) | ((x >> 4) & 0xF);
+  }
+       
+       
+        public byte encrypt( int m)
+       
+        {
+         System.out.println("\nEncryption Process Starts........\n\n"); 
+          m = permute( m, IP, IPmax);
+         System.out.print("\nAfter Permutation : ");
+          printData( m, 8);
+          m = fK( m, K1);
+          System.out.print("\nbefore Swap : ");
+          printData( m, 8);
+          m = SW( m);
+          System.out.print("\nAfter Swap : ");
+          printData( m, 8);
+          m = fK( m, K2);
+          System.out.print("\nbefore IP inverse : ");
+          printData( m, 8);
+          m = permute( m, IPI, IPImax);
+          return (byte) m;
+       
+        }
+       
+       
+        public byte decrypt( int m)
+       
+        {
+          System.out.println("\nDecryption Process Starts........\n\n");
+          printData( m, 8);
+          m = permute( m, IP, IPmax);
+          System.out.print("\nAfter Permutation : ");
+          printData( m, 8);
+          m = fK( m, K2);
+          System.out.print("\nbefore Swap : ");
+          printData( m, 8);
+          m = SW( m);
+          System.out.print("\nAfter Swap : ");
+          printData( m, 8);
+          m = fK( m, K1);
+          System.out.print("\nBefore Extraction Permutation : ");
+          printData( m, 4);
+          m = permute( m, IPI, IPImax);
+          System.out.print("\nAfter Extraction Permutation : ");
+          printData( m, 8);
+          return (byte) m;
+       
+        }
+       
+        public static void printData( int x, int n)
+         {
+           int mask = 1 << (n-1);
+           while( mask > 0)
+           {
+           System.out.print( ((x & mask) == 0) ? '0' : '1');
+           mask >>= 1;
+           }
+        }
+       
+       
+       
+        public SDES( int K)
+      {
+          K = permute( K, P10, P10max);
+          int t1 = (K >> 5) & 0x1F;
+          int t2 = K & 0x1F;
+          t1 = ((t1 & 0xF) << 1) | ((t1 & 0x10) >> 4);
+          t2 = ((t2 & 0xF) << 1) | ((t2 & 0x10) >> 4);
+          K1 = permute( (t1 << 5)| t2, P8, P8max);
+          t1 = ((t1 & 0x7) << 2) | ((t1 & 0x18) >> 3);
+          t2 = ((t2 & 0x7) << 2) | ((t2 & 0x18) >> 3);
+          K2 = permute( (t1 << 5)| t2, P8, P8max);
+       
+        }
+       
+      }
+
+// Main operations
+      public class SimplifiedDES
+      {
+       
+        public static void main( String args[]) throws Exception
+        {
+         DataInputStream inp=new DataInputStream(System.in);
+         System.out.println("Enter the 10 Bit Key :");
+          int K = Integer.parseInt(inp.readLine(),2);
+          SDES A = new SDES( K);
+          System.out.println("Enter the 8 Bit message To be Encrypt  : ");
+          int m = Integer.parseInt(inp.readLine(),2);
+          System.out.print("\nKey K1: ");
+          SDES.printData( A.K1, 8);
+          System.out.print("\nKey K2: ");
+          SDES.printData( A.K2, 8);
+          m = A.encrypt( m);
+          System.out.print("\nEncrypted Message: ");
+          SDES.printData( m, 8);
+          m = A.decrypt( m);
+          System.out.print("\nDecrypted Message: ");
+          SDES.printData( m, 8);
+       
+        }
+       
+    }
+
+
+Output:
+
+D:\javapgm>java SimplifiedDES
+Enter the 10 Bit Key :
+1011011010
+Enter the 8 Bit message To be Encrypt  :
+10110110
+Key K1: 11110101
+Key K2: 01100011
+Encryption Process Starts........
+After Permutation : 01111001
+before Swap : 00001001
+After Swap : 10010000
+before IP inverse : 10000000
+Encrypted Message: 01000000
+Decryption Process Starts........
+01000000
+After Permutation : 10000000
+before Swap : 10010000
+After Swap : 00001001
+Before Extraction Permutation : 1001
+After Extraction Permutation : 10110110
+Decrypted Message: 10110110
+
+---------------------------------------------------------------------------------------------------------------
+
+
+PRIME FACTORIZATION:
+
+import java.io.*; 
+import java.lang.Math; 
+  
+class GFG 
+{ 
+    // A function to print all prime factors 
+    // of a given number n 
+    public static void primeFactors(int n) 
+    { 
+        // Print the number of 2s that divide n 
+        while (n%2==0) 
+        { 
+            System.out.print(2 + " "); 
+            n /= 2; 
+        } 
+  
+        // n must be odd at this point.  So we can 
+        // skip one element (Note i = i +2) 
+        for (int i = 3; i <= Math.sqrt(n); i+= 2) 
+        { 
+            // While i divides n, print i and divide n 
+            while (n%i == 0) 
+            { 
+                System.out.print(i + " "); 
+                n /= i; 
+            } 
+        } 
+  
+        // This condition is to handle the case whien 
+        // n is a prime number greater than 2 
+        if (n > 2) 
+            System.out.print(n); 
+    } 
+  
+    public static void main (String[] args) 
+    { 
+        int n = 315; 
+        primeFactors(n); 
+    } 
+} 
+
+---------------------------------------------------------------------------------------------------------------
+
+PRIMITIVE ROOT:
+public static void primitive_root(int g,int n){
+
+        ArrayList<Integer>a=new ArrayList<>();
+
+        for(int i=0;i<n-1;++i){
+
+            if(a.contains((int)Math.pow(g,i)%n)!=true){
+
+                a.add((int)Math.pow(g,i)%n);
+
+                System.out.println((int)Math.pow(g,i)%n);
+
+            }
+
+        }
+
+        if(a.size()==n-1)
+
+            System.out.println("Primitive Root");
+
+    }
+
+---------------------------------------------------------------------------------------------------------------
+
+AFFINE CIPHER:
+import java.util.Scanner;
+ 
+public class AffineCipher
+{
+    public static String encryptionMessage(String Msg)
+    {
+        String CTxt = "";
+        int a = 3;
+        int b = 6;
+        for (int i = 0; i < Msg.length(); i++)
+        {
+            CTxt = CTxt + (char) ((((a * Msg.charAt(i)) + b) % 26) + 65);
+        }
+        return CTxt;
+    }
+ 
+    public static String decryptionMessage(String CTxt)
+    {
+        String Msg = "";
+        int a = 3;
+        int b = 6;
+        int a_inv = 0;
+        int flag = 0;
+        for (int i = 0; i < 26; i++)
+        {
+            flag = (a * i) % 26;
+            if (flag == 1)
+            {
+                a_inv = i;
+                System.out.println(i);
+            }
+        }
+        for (int i = 0; i < CTxt.length(); i++)
+        {
+            Msg = Msg + (char) (((a_inv * ((CTxt.charAt(i) - b)) % 26)) + 65);
+        }
+        return Msg;
+    }
+ 
+    public static void main(String[] args)
+    {
+        Scanner sc = new Scanner(System.in);
+        System.out.println("Enter the message: ");
+        String message = sc.next();
+        System.out.println("Message is :" + message);
+        System.out.println("Encrypted Message is : "
+                + encryptionMessage(message));
+        System.out.println("Decrypted Message is: "
+                + decryptionMessage(encryptionMessage(message)));
+        sc.close();
+    }
+}
+Output:
+
+$ javac AffineCipher.java
+$ java AffineCipher
+ 
+Enter the message: 
+SANFOUNDRY
+Message is :SANFOUNDRY
+Encrypted Message is : VTGIJBGCSN
+9
+Decrypted Message is: SANFOUNDRY
+
+---------------------------------------------------------------------------------------------------------------
+
+MD5:
+
+FIRST:
+
+import java.math.BigInteger; 
+import java.security.MessageDigest; 
+import java.security.NoSuchAlgorithmException; 
+
+// Java program to calculate MD5 hash value 
+public class MD5 { 
+	public static String getMd5(String input) 
+	{ 
+		try { 
+
+			// Static getInstance method is called with hashing MD5 
+			MessageDigest md = MessageDigest.getInstance("MD5"); 
+
+			// digest() method is called to calculate message digest 
+			// of an input digest() return array of byte 
+			byte[] messageDigest = md.digest(input.getBytes()); 
+
+			// Convert byte array into signum representation 
+			BigInteger no = new BigInteger(1, messageDigest); 
+
+			// Convert message digest into hex value 
+			String hashtext = no.toString(16); 
+			while (hashtext.length() < 32) { 
+				hashtext = "0" + hashtext; 
+			} 
+			return hashtext; 
+		} 
+
+		// For specifying wrong message digest algorithms 
+		catch (NoSuchAlgorithmException e) { 
+			throw new RuntimeException(e); 
+		} 
+	} 
+
+	// Driver code 
+	public static void main(String args[]) throws NoSuchAlgorithmException 
+	{ 
+		String s = "GeeksForGeeks"; 
+		System.out.println("Your HashCode Generated by MD5 is: " + getMd5(s)); 
+	} 
+} 
+
+
+
+
+SECOND:
+
+public class MD5
+{
+    private static final int   INIT_A     = 0x67452301;
+    private static final int   INIT_B     = (int) 0xEFCDAB89L;
+    private static final int   INIT_C     = (int) 0x98BADCFEL;
+    private static final int   INIT_D     = 0x10325476;
+    private static final int[] SHIFT_AMTS = { 7, 12, 17, 22, 5, 9, 14, 20, 4,
+            11, 16, 23, 6, 10, 15, 21    };
+    private static final int[] TABLE_T    = new int[64];
+    static
+    {
+        for (int i = 0; i < 64; i++)
+            TABLE_T[i] = (int) (long) ((1L << 32) * Math.abs(Math.sin(i + 1)));
+    }
+ 
+    public static byte[] computeMD5(byte[] message)
+    {
+        int messageLenBytes = message.length;
+        int numBlocks = ((messageLenBytes + 8) >>> 6) + 1;
+        int totalLen = numBlocks << 6;
+        byte[] paddingBytes = new byte[totalLen - messageLenBytes];
+        paddingBytes[0] = (byte) 0x80;
+        long messageLenBits = (long) messageLenBytes << 3;
+        for (int i = 0; i < 8; i++)
+        {
+            paddingBytes[paddingBytes.length - 8 + i] = (byte) messageLenBits;
+            messageLenBits >>>= 8;
+        }
+        int a = INIT_A;
+        int b = INIT_B;
+        int c = INIT_C;
+        int d = INIT_D;
+        int[] buffer = new int[16];
+        for (int i = 0; i < numBlocks; i++)
+        {
+            int index = i << 6;
+            for (int j = 0; j < 64; j++, index++)
+                buffer[j >>> 2] = ((int) ((index < messageLenBytes) ? message[index]
+                        : paddingBytes[index - messageLenBytes]) << 24)
+                        | (buffer[j >>> 2] >>> 8);
+            int originalA = a;
+            int originalB = b;
+            int originalC = c;
+            int originalD = d;
+            for (int j = 0; j < 64; j++)
+            {
+                int div16 = j >>> 4;
+                int f = 0;
+                int bufferIndex = j;
+                switch (div16)
+                {
+                    case 0:
+                        f = (b & c) | (~b & d);
+                        break;
+                    case 1:
+                        f = (b & d) | (c & ~d);
+                        bufferIndex = (bufferIndex * 5 + 1) & 0x0F;
+                        break;
+                    case 2:
+                        f = b ^ c ^ d;
+                        bufferIndex = (bufferIndex * 3 + 5) & 0x0F;
+                        break;
+                    case 3:
+                        f = c ^ (b | ~d);
+                        bufferIndex = (bufferIndex * 7) & 0x0F;
+                        break;
+                }
+                int temp = b
+                        + Integer.rotateLeft(a + f + buffer[bufferIndex]
+                                + TABLE_T[j],
+                                SHIFT_AMTS[(div16 << 2) | (j & 3)]);
+                a = d;
+                d = c;
+                c = b;
+                b = temp;
+            }
+            a += originalA;
+            b += originalB;
+            c += originalC;
+            d += originalD;
+        }
+        byte[] md5 = new byte[16];
+        int count = 0;
+        for (int i = 0; i < 4; i++)
+        {
+            int n = (i == 0) ? a : ((i == 1) ? b : ((i == 2) ? c : d));
+            for (int j = 0; j < 4; j++)
+            {
+                md5[count++] = (byte) n;
+                n >>>= 8;
+            }
+        }
+        return md5;
+    }
+ 
+    public static String toHexString(byte[] b)
+    {
+        StringBuilder sb = new StringBuilder();
+        for (int i = 0; i < b.length; i++)
+        {
+            sb.append(String.format("%02X", b[i] & 0xFF));
+        }
+        return sb.toString();
+    }
+ 
+    public static void main(String[] args)
+    {
+        String[] testStrings = { "", "Sanfoundry", "Message Digest",
+                "abcdefghijklmnopqrstuvwxyz" };
+        for (String s : testStrings)
+            System.out.println("0x" + toHexString(computeMD5(s.getBytes()))
+                    + " <== \"" + s + "\"");
+        return;
+    }
+}
+Output:
+
+$ javac MD5.java
+$ java MD5
+ 
+0xD41D8CD98F00B204E9800998ECF8427E <== ""
+0x123EC1617559F98A4C86AF629FEF21E6 <== "Sanfoundry"
+0xBBD9D8CC4AD8AD2599DBF623E7E5282E <== "Message Digest"
+0xC3FCD3D76192E4007DFB496CCA67E13B <== "abcdefghijklmnopqrstuvwxyz"
+
+---------------------------------------------------------------------------------------------------------------
+
+COUNTER MODE DES:
+
+import java.security.Security;
+import javax.crypto.Cipher;
+import javax.crypto.spec.IvParameterSpec;
+import javax.crypto.spec.SecretKeySpec;
+ 
+ 
+public class Main {
+ 
+    public static void main(String[] args) throws Exception {
+ 
+   
+ 
+  Security.addProvider(new org.bouncycastle.jce.provider.BouncyCastleProvider());
+ 
+  byte[] pass = "www.javacodegeeks.com".getBytes();
+ 
+  byte[] sKey = new byte[]{0x01, 0x23, 0x45, 0x67, (byte) 0x89, (byte) 0xab, (byte) 0xcd,
+ 
+ 
+(byte) 0xef};
+ 
+   
+ 
+  byte[] initializationVector = new byte[]{0x00, 0x01, 0x02, 0x03, 0x00, 0x00, 0x00, 0x01};
+ 
+ 
+  SecretKeySpec key = new SecretKeySpec(sKey, "DES");
+ 
+   
+ 
+  IvParameterSpec ivSpv = new IvParameterSpec(initializationVector);
+ 
+  Cipher c = Cipher.getInstance("DES/CTR/NoPadding", "BC");
+ 
+  System.out.println("input : " + new String(pass));
+ 
+ 
+  // encryption pass
+ 
+  c.init(Cipher.ENCRYPT_MODE, key, ivSpv);
+ 
+  byte[] encText = new byte;
+ 
+  int ctLen = c.update(pass, 0, pass.length, encText, 0);
+ 
+  ctLen += c.doFinal(encText, ctLen);
+ 
+  System.out.println("cipher: " + new String(encText).getBytes("UTF-8").toString() + " bytes: " + ctLen);
+ 
+ 
+  // decryption pass
+ 
+  c.init(Cipher.DECRYPT_MODE, key, ivSpv);
+ 
+  byte[] decrpt = new byte;
+ 
+  int ptLen = c.update(encText, 0, ctLen, decrpt, 0);
+ 
+  ptLen += c.doFinal(decrpt, ptLen);
+ 
+  System.out.println("plain : " + new String(decrpt) + " bytes: " + ptLen);
+    }
+}
+Output:
+
+input : www.javacodegeeks.com
+cipher: [B@4d63e95 bytes: 21
+plain : www.javacodegeeks.com bytes: 21
+
+
+---------------------------------------------------------------------------------------------------------------
